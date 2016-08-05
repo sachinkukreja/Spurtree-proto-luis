@@ -158,7 +158,6 @@ function GetProducts(products,dialog) {
             console.log("in else - should send the chat message");
             dispatch(ChatChanged(dialog.prompt));
         }
-
        return Promise.all(
             products.map((product)=> {
                 return fetch(`http://luisai.sachinkukreja.com/api/products/${product.id}?ws_key=K5JKXSHBIE76CXXY5V4KBWS6F156GS7N&output_format=JSON`)
