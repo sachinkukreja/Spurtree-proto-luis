@@ -9,10 +9,10 @@ let ProductSelected;
 export const SendToLuis = (searchterm) => {
     console.log("Sending to Luis :", searchterm);
     return (dispatch) => {
-        dispatch(ChatChanged(searchterm))
-        dispatch(callLuisApi(searchterm))
+        dispatch(ChatChanged(searchterm));
+        dispatch(callLuisApi(searchterm));
     };
-}
+};
 
 export const SelectProduct = (product) => {
     ProductSelected = product;
@@ -40,9 +40,9 @@ function getTopScoringIntentandEntites(json) {
     let dialog = json.dialog;
     if (dialog.status == "Finished") {
         contextid = "";
-        initialEntity = "";
         return (dispatch) => {
-            dispatch(callIntent(topscoringIntent, entities, actions,dialog))
+            dispatch(callIntent(topscoringIntent, entities, actions,dialog));
+            initialEntity = ""
         };
 
     } else {
@@ -50,7 +50,7 @@ function getTopScoringIntentandEntites(json) {
             if (entity.type == 'ProductCategory') {
                 initialEntity = entity.entity
             }
-        })
+        });
         contextid = dialog.contextId;
         return (dispatch) => {
             dispatch(callIntent(topscoringIntent, entities, actions,dialog))
@@ -82,14 +82,15 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                                         dispatch(GetProducts(json.products,dialog)).then(()=> {
                                             dispatch(ProductReceived(productdetails))
                                         });
-                                    })
+                                    });
                                 break;
 
                             case "brand":
                                 let color = "";
                                 actions[0].parameters.map((param)=> {
-                                    if (param.name = "color" && param.value != null) {
+                                    if (param.name == "color" && param.value != null) {
                                         color = param.value[0].entity;
+                                        console.log("Color::" ,color + "Initial Entity::" + initialEntity );
                                     }
                                 });
                                 fetch(`http://luisai.sachinkukreja.com/api/search/?ws_key=K5JKXSHBIE76CXXY5V4KBWS6F156GS7N&query=${color} ${initialEntity} ${entities[0].entity}&language=1&output&output_format=JSON`)
@@ -98,7 +99,7 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                                         dispatch(GetProducts(json.products,dialog)).then(()=> {
                                             dispatch(ProductReceived(productdetails))
                                         });
-                                    })
+                                    });
                                 break;
 
                             default:
@@ -108,7 +109,7 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                                         dispatch(GetProducts(json.products,dialog)).then(()=> {
                                             dispatch(ProductReceived(productdetails))
                                         });
-                                    })
+                                    });
                                 break;
 
                         }
@@ -119,7 +120,7 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                     let ConsolidatedEtities = "";
                     entities.map((entity)=> {
                         ConsolidatedEtities += " " + entity.entity;
-                    })
+                    });
 
                     fetch(`http://luisai.sachinkukreja.com/api/search/?ws_key=K5JKXSHBIE76CXXY5V4KBWS6F156GS7N&query=${ConsolidatedEtities}&language=1&output&output_format=JSON`)
                         .then(response => response.json())
@@ -132,14 +133,14 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                 break;
             case "AddToCart":
                 if (ProductSelected != null) {
-                    console.log("product selected", ProductSelected)
+                    console.log("product selected", ProductSelected);
                     return dispatch(ChatChanged(ProductSelected.name + " Added to Cart"));
                 }
                 else if (productdetails.length == 1) {
-                    console.log("only one product remains")
+                    console.log("only one product remains");
                     return dispatch(ChatChanged(productdetails[0].name + " Added to Cart"));
                 }
-                return dispatch(ChatChanged("No Product Select to Add to Cart.."))
+                return dispatch(ChatChanged("No Product Select to Add to Cart.."));
 
 
         }
@@ -155,7 +156,6 @@ function GetProducts(products,dialog) {
             contextid = "";
         }
         else {
-            console.log("in else - should send the chat message");
             dispatch(ChatChanged(dialog.prompt));
         }
        return Promise.all(
