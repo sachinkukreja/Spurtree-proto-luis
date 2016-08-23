@@ -34,6 +34,10 @@ export const SelectProduct = (product) => {
     }
 };
 
+export const GoBack = () =>
+{
+    ProductSelected = null;
+}
 function callLuisApi(searchterm) {
     console.log("calling Luis Api");
     if (UsePrevparams)
@@ -140,7 +144,7 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                                         dispatch(GetProducts(json.products,dialog)).then(()=> {
                                             dispatch(ProductReceived(productdetails))
                                         },()=> {
-                                            dispatch(ChatChanged("No Item Found , Please try a different search"))
+                                            dispatch(ChatChanged("No Item Found , Please try a different keyword"))
 
                                         });
                                     });
@@ -193,6 +197,9 @@ function callIntent(topscoringIntent, entities, actions,dialog) {
                 }
                 return dispatch(ChatChanged("No Product Selected "));
             break;
+            case "SortProducts":
+                ChatChanged(enitities.toString() + " are the entites needed  to sort ");
+                break;
             case "None":
                 return dispatch => dispatch(ChatChanged("Sorry, I Do not understand that "));
             break;
@@ -241,5 +248,12 @@ export const ChatChanged = (chatItem) => {
     return {
         type: 'CHAT_CHANGED',
         payload: chatlist
+    }
+};
+
+export const ClearContext = () => {
+    contextid="";
+    return {
+        type: 'CONTEXT_CLEARED'
     }
 };

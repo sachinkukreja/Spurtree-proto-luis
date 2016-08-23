@@ -1,5 +1,7 @@
 import React,{Component} from 'react' ;
 import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {ClearContext} from  '../actions/index';
 
 class ChatList extends Component
 {
@@ -12,6 +14,11 @@ class ChatList extends Component
         }
     }
 
+    clearContext()
+    {
+            this.props.ClearContext();
+    }
+
     render() {
         if (!this.props.chats || this.props.chats.length <=0)
         {
@@ -20,7 +27,10 @@ class ChatList extends Component
 
         return (
             <div className="chatlist">
+                <div className="clearContext" onClick={this.clearContext()}>X</div>
+                <ul>
                 {this.renderList()}
+                </ul>
             </div>
         );
     }
@@ -34,6 +44,10 @@ function mapStateToProps(state) {
     };
 }
 
+function matchDispatchToProps(dispatch)
+{
+    return  bindActionCreators({ClearContext: ClearContext}, dispatch);
+}
 
 
-export default connect(mapStateToProps)(ChatList);
+export default connect(mapStateToProps,matchDispatchToProps)(ChatList);
